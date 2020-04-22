@@ -81,37 +81,33 @@ IO_INPUT_DUMMY(ControllerReset, false)
 
 // Define your endstops inputs
 
-IO_INPUT_INVERTED(IOEndstopXMax, ORIG_X_MAX_PIN)
-IO_INPUT_INVERTED(IOEndstopYMax, ORIG_Y_MAX_PIN)
-IO_INPUT_INVERTED(IOEndstopZMax, ORIG_Z_MAX_PIN)
+IO_INPUT_INVERTED_PULLUP(IOEndstopXMin, ORIG_X_MIN_PIN)
 IO_INPUT_INVERTED_PULLUP(IOEndstopYMin, ORIG_Y_MIN_PIN)
+IO_INPUT_INVERTED_PULLUP(IOEndstopZMax, ORIG_Z_MAX_PIN)
 IO_INPUT_PULLUP(IOEndstopZProbe, ORIG_Z_MIN_PIN)
 
 // Define our endstops solutions
 // You need to define all min and max endstops for all
 // axes except E even if you have none!
 
-ENDSTOP_SWITCH_HW(endstopMotorXMax, IOEndstopXMax, -1, true)
-ENDSTOP_SWITCH_HW(endstopMotorYMax, IOEndstopYMax, -1, true)
-ENDSTOP_SWITCH_HW(endstopMotorZMax, IOEndstopZMax, -1, true)
-ENDSTOP_NONE(endstopXMin)
-ENDSTOP_NONE(endstopYMin)
+ENDSTOP_SWITCH_HW(endstopXMin, IOEndstopXMin, X_AXIS, false)
+ENDSTOP_SWITCH_HW(endstopYMin, IOEndstopYMin, Y_AXIS, false)
+ENDSTOP_SWITCH_HW(endstopZMax, IOEndstopZMax, Z_AXIS, true)
 ENDSTOP_NONE(endstopZMin)
 ENDSTOP_NONE(endstopXMax)
 ENDSTOP_NONE(endstopYMax)
-ENDSTOP_MERGE3(endstopZMax, endstopMotorXMax, endstopMotorYMax, endstopMotorZMax, Z_AXIS, true)
 ENDSTOP_SWITCH_HW(endstopZProbe, IOEndstopZProbe, ZPROBE_AXIS, false)
 
 // Servo for z-probe
-IO_OUTPUT(Servo1Pin, 4)
-SERVO_ANALOG(ZProbeServo, 0, Servo1Pin, 500, 2500, 1473)
+//IO_OUTPUT(Servo1Pin, 4)
+//SERVO_ANALOG(ZProbeServo, 0, Servo1Pin, 500, 2500, 1473)
 // Set to nullptr for no zprobe or &endstopName for a switch
 #undef ZPROBE_ADDRESS
 #define ZPROBE_ADDRESS &endstopZProbe
 
 // Define fans
 
-IO_PWM_HARDWARE(CoolerFan, ORIG_FAN2_PIN, 1000)
+//IO_PWM_HARDWARE(CoolerFan, ORIG_FAN2_PIN, 1000)
 //IO_PWM_HARDWARE(Fan1PWMnoKS, ORIG_FAN_PIN, 5000)
 //IO_PWM_KICKSTART(Fan1PWM, Fan1PWMnoKS, 10)
 IO_PWM_HARDWARE(Fan1PWMNoMin, ORIG_FAN_PIN, 1000)
@@ -129,13 +125,16 @@ IO_ANALOG_INPUT(IOAnalogExt2, TEMP_2_PIN, 5)
 IO_ANALOG_INPUT(IOAnalogBed1, TEMP_1_PIN, 5)
 
 // Need a conversion table for epcos NTC
-IO_TEMP_TABLE_NTC(TempTableEpcos, Epcos_B57560G0107F000)
+IO_TEMP_TABLE_NTC(TempTable3950, NTC_3950)
+IO_TEMP_TABLE_NTC(TempTable104GT, ATC_104GT)
+IO_TEMP_TABLE_NTC(TempTableEpcos, Epcos_B57560G0107F000)  //Not sure this is the right one, it's actuall a B57560G104F
+
 // Now create the temperature inputs
 
-IO_TEMPERATURE_TABLE(TempBed1, IOAnalogBed1, TempTableEpcos)
-IO_TEMPERATURE_TABLE(TempExt1, IOAnalogExt1, TempTableEpcos)
+IO_TEMPERATURE_TABLE(TempBed1, IOAnalogBed1, TempTable3950)
+IO_TEMPERATURE_TABLE(TempExt1, IOAnalogExt1, TempTable104GT)
 IO_TEMPERATURE_TABLE(TempExt2, IOAnalogExt2, TempTableEpcos)
-IO_HOTTEST_OF_2(TempHottestExtruder, TempExt1, TempExt2)
+//IO_HOTTEST_OF_2(TempHottestExtruder, TempExt1, TempExt2)
 
 // Use PWM outputs to heat. If using hardware PWM make sure
 // that the selected pin can be used as hardware pwm otherwise
@@ -143,27 +142,27 @@ IO_HOTTEST_OF_2(TempHottestExtruder, TempExt1, TempExt2)
 
 IO_PWM_HARDWARE(PWMExtruder1_12V, HEATER_2_PIN, 1000)
 IO_PWM_HARDWARE(PWMExtruder2_12V, HEATER_0_PIN, 1000)
-IO_PWM_SCALEDOWN(PWMExtruder1, PWMExtruder1_12V, 63)
-IO_PWM_SCALEDOWN(PWMExtruder2, PWMExtruder2_12V, 63)
+IO_PWM_SCALEDOWN(PWMExtruder1, PWMExtruder1_12V, 175)
+IO_PWM_SCALEDOWN(PWMExtruder2, PWMExtruder2_12V, 175)
 IO_PWM_HARDWARE(PWMBed1, HEATER_1_PIN, 1000)
 
 // Define all stepper motors used
 // For deltas the top is the minumum position in motor coordinates
 // therefore the max endstops of a delta need to be entered as
 // minimum endstop here!
-STEPPER_TMC2130_HW_SPI(XMotor, IOX1Step, IOX1Dir, IOX1Enable, ORIG_X_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopMotorXMax)
-STEPPER_TMC2130_HW_SPI(YMotor, IOY1Step, IOY1Dir, IOY1Enable, ORIG_Y_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopMotorYMax)
-STEPPER_TMC2130_HW_SPI(ZMotor, IOZ1Step, IOZ1Dir, IOZ1Enable, ORIG_Z_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopMotorZMax)
-STEPPER_TMC2130_HW_SPI(E1Motor, IOE1Step, IOE1Dir, IOE1Enable, ORIG_E0_CS_PIN, 0.11, 1, 32, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
-STEPPER_TMC2130_HW_SPI(E2Motor, IOE2Step, IOE2Dir, IOE2Enable, ORIG_E1_CS_PIN, 0.11, 1, 32, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
+STEPPER_TMC2130_HW_SPI(XMotor, IOX1Step, IOX1Dir, IOX1Enable, ORIG_X_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
+STEPPER_TMC2130_HW_SPI(YMotor, IOY1Step, IOY1Dir, IOY1Enable, ORIG_Y_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
+STEPPER_TMC2130_HW_SPI(ZMotor, IOZ1Step, IOZ1Dir, IOZ1Enable, ORIG_Z_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
+STEPPER_TMC2130_HW_SPI(E1Motor, IOE1Step, IOE1Dir, IOE1Enable, ORIG_E0_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
+STEPPER_TMC2130_HW_SPI(E2Motor, IOE2Step, IOE2Dir, IOE2Enable, ORIG_E1_CS_PIN, 0.11, 1, 64, 900, true, 100, 8, 12500000, endstopNone, endstopNone)
 
 // Heat manages are used for every component that needs to
 // control temperature. Higher level classes take these as input
 // and simple heater like a heated bed use it directly.
 HEAT_MANAGER_PID(HeatedBed1, 'B', 0, TempBed1, PWMBed1, 120, 255, 1000, 10, 300000, 131.1, 3.76, 1143, 80, 255, false)
-HEAT_MANAGER_PID(HeaterExtruder1, 'E', 0, TempExt1, PWMExtruder1, 310, 255, 1000, 20, 20000, 18.3, 2.13, 39, 40, 235, false)
-HEAT_MANAGER_PID(HeaterExtruder2, 'E', 1, TempExt2, PWMExtruder2, 310, 255, 1000, 20, 20000, 18.3, 2.13, 39, 40, 235, false)
-COOLER_MANAGER_SENSOR(ExtruderCooler, TempHottestExtruder, CoolerFan, 70, 200, 150, 255)
+HEAT_MANAGER_PID(HeaterExtruder1, 'E', 0, TempExt1, PWMExtruder1, 310, 175, 1000, 20, 20000, 18.3, 2.13, 39, 40, 235, false)
+HEAT_MANAGER_PID(HeaterExtruder2, 'E', 1, TempExt2, PWMExtruder2, 245, 175, 1000, 20, 20000, 18.3, 2.13, 39, 40, 235, false)
+//COOLER_MANAGER_SENSOR(ExtruderCooler, TempHottestExtruder, CoolerFan, 70, 200, 150, 255)
 
 // Coolers are stand alone functions that allow it to control
 // a fan with external sensors. Many extruders require a cooling
@@ -175,5 +174,5 @@ COOLER_MANAGER_SENSOR(ExtruderCooler, TempHottestExtruder, CoolerFan, 70, 200, 1
 // Define tools. They get inserted into a tool array in configuration.h
 // Typical tools are:
 
-TOOL_EXTRUDER(ToolExtruder1, 0, -13, 0, HeaterExtruder1, E1Motor, 1.75, 500, 5, 30, 5000, 177, "M117 Extruder 1", "", &Fan1PWM)
-TOOL_EXTRUDER(ToolExtruder2, 0, 13, 0, HeaterExtruder2, E2Motor, 1.75, 500, 5, 30, 5000, 177, "M117 Extruder 2", "", &Fan1PWM)
+TOOL_EXTRUDER(ToolExtruder1, 0, 0, 0, HeaterExtruder1, E1Motor, 1.75, 582, 5, 30, 5000, 177, "M117 Extruder 1", "", nullptr)
+TOOL_EXTRUDER(ToolExtruder2, 0, 0, 0, HeaterExtruder2, E2Motor, 1.75, 582, 5, 30, 5000, 177, "M117 Extruder 2", "", nullptr)

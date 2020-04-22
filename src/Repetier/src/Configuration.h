@@ -69,7 +69,7 @@ Early stage version for Stacke X2 printer - use with care
 #define BLOCK_FREQUENCY 1000         // Number of blocks with constant stepper rate per second.
 #define VELOCITY_PROFILE 2           // 0 = linear, 1 = cubic, 2 = quintic velocity shape
 #define SMALL_SEGMENT_SIZE 0.4       // Smaller segments reduce join speed to prevent vibrations causing lost steps
-#define Z_SPEED 100                  // Z positioning speed
+#define Z_SPEED 16                   // Z positioning speed
 #define XY_SPEED 200                 // XY positioning speed for normal operations
 #define G0_FEEDRATE 0                // Speed for G0 moves. Independent from set F value! Set 0 to use F value.
 #define MAX_ROOM_TEMPERATURE 25      // No heating below this temperature!
@@ -84,14 +84,14 @@ Early stage version for Stacke X2 printer - use with care
 
 
 // 0 = Cartesian, 1 = CoreXYZ, 2 = delta, 3 = Dual X-Axis
-#define PRINTER_TYPE PRINTER_TYPE_DELTA
+#define PRINTER_TYPE PRINTER_TYPE_CARTESIAN
 // steps to include as babysteps per 1/BLOCK_FREQUENCY seconds. Must be lower then STEPPER_FREQUENCY/BLOCK_FREQUENCY and be low enough to not loose steps.
 #define BABYSTEPS_PER_BLOCK \
     { 1, 1, 1 }
 // If all axis end stops are hardware based we can skip the time consuming tests each step
-#define NO_SOFTWARE_AXIS_ENDSTOPS
+//#define NO_SOFTWARE_AXIS_ENDSTOPS
 // Normally only a delta has motor end stops required. Normally you trigger using axis endstops.
-// #define NO_MOTOR_ENDSTOPS
+#define NO_MOTOR_ENDSTOPS
 
 #define FEATURE_CONTROLLER CONTROLLER_REPRAPDISCOUNT_GLCD
 // Use more memory to speedup display updates
@@ -186,12 +186,12 @@ to the position. 0 = no contribution. */
 #include "drivers/drivers.h"
 #include "io/redefine.h"
 
-#define Z_PROBE_TYPE Z_PROBE_TYPE_BLTOUCH
-#define Z_PROBE_HEIGHT 3             // Distance bed-nozzle when trigger switches
+#define Z_PROBE_TYPE Z_PROBE_TYPE_DEFAULT
+#define Z_PROBE_HEIGHT 1.1           // Distance bed-nozzle when trigger switches
 #define Z_PROBE_BED_DISTANCE 10      // Optimal starting distance
-#define Z_PROBE_SPEED 5              // Speed fo z testing
-#define Z_PROBE_X_OFFSET 0           // x offset relative to extruder 0,0 offset
-#define Z_PROBE_Y_OFFSET 26          // y offset relative to extruder 0,0 offset
+#define Z_PROBE_SPEED 6              // Speed fo z testing
+#define Z_PROBE_X_OFFSET 51          // x offset relative to extruder 0,0 offset
+#define Z_PROBE_Y_OFFSET 0           // y offset relative to extruder 0,0 offset
 #define Z_PROBE_COATING 0            // Coating thickness if not detected by probe
 #define Z_PROBE_DELAY 0              // Extra delay before starting again. Only needed on electronic probes keeping state for a while
 #define Z_PROBE_REPETITIONS 1        // How often should we probe, 1 is minimum
@@ -205,9 +205,9 @@ to the position. 0 = no contribution. */
 CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 
 /** Axes are homed in order of priority (0..10) if homing direction is not 0. */
-#define X_HOME_PRIORITY 0
-#define Y_HOME_PRIORITY 1
-#define Z_HOME_PRIORITY 2
+#define X_HOME_PRIORITY 1
+#define Y_HOME_PRIORITY 2
+#define Z_HOME_PRIORITY 0
 
 // All fans in this list list become controllable with M106/M107
 // by selecteing the fan number with P0..P<NUM_FANS-1>
@@ -224,7 +224,7 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
     {}
 
 #define SERVO_LIST \
-    { &ZProbeServo }
+    { }
 #define TOOLS \
     { &ToolExtruder1, &ToolExtruder2 }
 
@@ -271,11 +271,11 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 
 // x axis extruders are 62mm width, distance after homing 503mm
 
-#define X_MAX_LENGTH 420
-#define Y_MAX_LENGTH 420
-#define Z_MAX_LENGTH 595.596
-#define X_MIN_POS -210
-#define Y_MIN_POS -210
+#define X_MAX_LENGTH 240
+#define Y_MAX_LENGTH 240
+#define Z_MAX_LENGTH 200
+#define X_MIN_POS -25
+#define Y_MIN_POS 0
 #define Z_MIN_POS 0
 
 #define BED_X_MIN 0
@@ -290,17 +290,17 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 #define PARK_POSITION_X (X_MIN_POS)
 #define PARK_POSITION_Y (Y_MIN_POS + Y_MAX_LENGTH)
 #endif
-#define PARK_POSITION_Z_RAISE 0
+#define PARK_POSITION_Z_RAISE 10
 
 #define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_X 1000
 #define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Y 1000
 #define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Z 1000
-#define XAXIS_STEPS_PER_MM 320
-#define YAXIS_STEPS_PER_MM 320
-#define ZAXIS_STEPS_PER_MM 320
+#define XAXIS_STEPS_PER_MM 400   //DAS Need to confirm with new stepers
+#define YAXIS_STEPS_PER_MM 400
+#define ZAXIS_STEPS_PER_MM 6400
 #define MAX_FEEDRATE_X 200
 #define MAX_FEEDRATE_Y 200
-#define MAX_FEEDRATE_Z 200
+#define MAX_FEEDRATE_Z 16
 
 // ################## EDIT THESE SETTINGS MANUALLY ################
 // ################ END MANUAL SETTINGS ##########################
@@ -385,7 +385,7 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 #define RAISE_Z_ON_TOOLCHANGE 0
 #define ZHOME_MIN_TEMPERATURE 0
 #define ZHOME_HEAT_ALL 0
-#define ZHOME_HEIGHT 590
+#define ZHOME_HEIGHT 200
 #define FIXED_Z_HOME_POSITION 0
 #define ZHOME_X_POS 0
 #define ZHOME_Y_POS 0
@@ -440,8 +440,8 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 #define SD_STOP_HEATER_AND_MOTORS_ON_STOP 1
 #define ARC_SUPPORT 1
 #define FEATURE_CHECKSUM_FORCED 0
-#define UI_PRINTER_NAME "Deltatower"
-#define UI_PRINTER_COMPANY "Deltatower"
+#define UI_PRINTER_NAME "Prusa Mk2.75"
+#define UI_PRINTER_COMPANY "Prusa Clone"
 #define UI_DISABLE_AUTO_PAGESWITCH 1
 #define UI_AUTORETURN_TO_MENU_AFTER 30000
 
