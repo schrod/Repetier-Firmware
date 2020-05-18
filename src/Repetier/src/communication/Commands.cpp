@@ -389,7 +389,7 @@ void Commands::processMCode(GCode* com) {
     }
     switch (com->M) {
     case 0:
-        // HAL::reportHALDebug();
+        HAL::reportHALDebug();
         break;
     case 3: // Spindle/laser
         MCode_3(com);

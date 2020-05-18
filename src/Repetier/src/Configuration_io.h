@@ -113,7 +113,7 @@ ENDSTOP_SWITCH_HW(endstopZProbe, IOEndstopZProbe, ZPROBE_AXIS, false)
 IO_PWM_HARDWARE(Fan1PWMNoMin, ORIG_FAN_PIN, 1000)
 //IO_OUTPUT(IOFan1, ORIG_FAN_PIN)
 //IO_PWM_SOFTWARE(Fan1PWMNoMin, IOFan1, 0)
-IO_PWM_MIN_SPEED(Fan1PWM, Fan1PWMNoMin, 255, false)
+// DAS IO_PWM_MIN_SPEED(Fan1PWM, Fan1PWMNoMin, 255, false)
 
 // Define temperature sensors
 
@@ -127,13 +127,12 @@ IO_ANALOG_INPUT(IOAnalogBed1, TEMP_1_PIN, 5)
 // Need a conversion table for epcos NTC
 IO_TEMP_TABLE_NTC(TempTable3950, NTC_3950)
 IO_TEMP_TABLE_NTC(TempTable104GT, ATC_104GT)
-IO_TEMP_TABLE_NTC(TempTableEpcos, Epcos_B57560G0107F000)  //Not sure this is the right one, it's actuall a B57560G104F
 
 // Now create the temperature inputs
 
 IO_TEMPERATURE_TABLE(TempBed1, IOAnalogBed1, TempTable3950)
 IO_TEMPERATURE_TABLE(TempExt1, IOAnalogExt1, TempTable104GT)
-IO_TEMPERATURE_TABLE(TempExt2, IOAnalogExt2, TempTableEpcos)
+IO_TEMPERATURE_TABLE(TempExt2, IOAnalogExt2, TempTable3950)
 //IO_HOTTEST_OF_2(TempHottestExtruder, TempExt1, TempExt2)
 
 // Use PWM outputs to heat. If using hardware PWM make sure

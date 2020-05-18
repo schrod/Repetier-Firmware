@@ -52,7 +52,7 @@ Early stage version for Stacke X2 printer - use with care
 
 // #define DEBUG_POS
 
-#define NUM_SERVOS 1
+#define NUM_SERVOS 0
 #define NUM_TOOLS 2
 #define MOTHERBOARD MOTHERBOARD_RUMBA32 // 412 // Stacker 3d Superboard
 #define EEPROM_MODE 1
@@ -213,7 +213,7 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 // by selecteing the fan number with P0..P<NUM_FANS-1>
 #define NUM_FANS 1
 #define FAN_LIST \
-    { &Fan1PWM }
+    { &Fan1PWMNoMin }
 
 #define NUM_HEATED_BEDS 1
 #define HEATED_BED_LIST \
@@ -369,17 +369,17 @@ CONFIG_VARIABLE_EQ(EndstopDriver, *ZProbe, ZPROBE_ADDRESS)
 #define ENDSTOP_Z_RETEST_REDUCTION_FACTOR 3
 #define ENDSTOP_X_BACK_ON_HOME 0.5
 #define ENDSTOP_Y_BACK_ON_HOME 0.5
-#define ENDSTOP_Z_BACK_ON_HOME 20
+#define ENDSTOP_Z_BACK_ON_HOME 0.5
 #define ALWAYS_CHECK_ENDSTOPS 0
-#define X_HOME_DIR 0
-#define Y_HOME_DIR 0
+#define X_HOME_DIR -1
+#define Y_HOME_DIR -1
 #define Z_HOME_DIR 1
 #define MOVE_X_WHEN_HOMED 0
 #define MOVE_Y_WHEN_HOMED 0
 #define MOVE_Z_WHEN_HOMED 0
 #define HOMING_FEEDRATE_X 50
 #define HOMING_FEEDRATE_Y 50
-#define HOMING_FEEDRATE_Z 50
+#define HOMING_FEEDRATE_Z 10
 #define ZHOME_PRE_RAISE 0
 #define ZHOME_PRE_RAISE_DISTANCE 10
 #define RAISE_Z_ON_TOOLCHANGE 0
